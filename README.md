@@ -6,25 +6,9 @@ A collection of **Composer-driven PHP scripts** for building, backing up, and di
 
 ## Why I Built WPConstructor Scripts
 
-While working on multiple WordPress plugins, I noticed a pattern: every project ended up needing the same Composer scripts. Copying them around, maintaining small differences, and fixing bugs in multiple places quickly became annoying—and error-prone.  
+While building WordPress plugins, I kept repeating the same Composer scripts—copying assets, creating ZIPs, backing up files, and securing directories. It became repetitive and error-prone.
 
-I wanted one reliable, reusable setup that handled the boring but critical stuff every plugin needs: copying assets, backing things up, building distributable ZIPs, and keeping WordPress secure.  
-
-That’s how **WPConstructor Scripts** was born.  
-
----
-
-## The Problem: Repeating the Same Work
-
-When building plugins with Composer, you often end up reinventing the wheel:
-
-- Copying assets into the right directories  
-- Preparing vendor files for distribution  
-- Creating plugin ZIPs with only the required files  
-- Making backups before builds or updates  
-- Ensuring no directories are exposed without an `index.php`  
-
-Instead of duplicating effort, I extracted everything into a single reusable scripts package.  
+So I built WPConstructor Scripts: a reusable setup that handles all the common plugin build tasks in one place, instead of rewriting them every time.
 
 ---
 
