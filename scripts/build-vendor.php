@@ -1,11 +1,24 @@
 <?php
 /**
- * Delete the dist-vendor folder recursively
+ * Builds the dist-vendor directory, used for the zip build vendor directory.
  *
- * @package WPConstructor_Scripts
+ * @package    WPConstructor\Scripts
+ * @copyright  2026 by WPConstructor
+ * @author     WPConstructor <https://wpconstructor.com/contact>
+ * @license    MIT (https://opensource.org/licenses/MIT)
+ * @link       https://wpconstructor.com/codes/wpconstructor-scripts
+ * @version    1.0.0 
+ * @since      1.0.0 
  */
 
-$dir = __DIR__ . '/../dist-vendor';
+/**
+ * Requires the helper.php file.
+ */
+require_once __DIR__ . '/helper.php';
+
+check_if_cli();
+$plugin_root     = get_plugin_root( false );
+$dist_vendor_dir = $plugin_root . '/dist-vendor';
 
 /**
  * Recursively delete a directory
@@ -14,7 +27,7 @@ $dir = __DIR__ . '/../dist-vendor';
  */
 function delete_dir( $dir ) {
 	if ( ! is_dir( $dir ) ) {
-		return;
+		return false;
 	}
 
 	$items = scandir( $dir );
@@ -36,17 +49,21 @@ function delete_dir( $dir ) {
 	rmdir( $dir );
 }
 
-// Delete the folder.
-delete_dir( $dir );
+if ( is_dir( $dist_vendor_dir ) ) {
 
-echo "dist-vendor folder deleted successfully.\n";
+	// Delete the folder.
+	delete_dir( $dist_vendor_dir );
+
+	echo "dist-vendor folder deleted successfully.\n";
+
+}
 
 /**
  * Copy vendor folder to dist-vendor for production, skipping unnecessary files.
  */
 
-$source      = __DIR__ . '/../vendor';        // original vendor folder.
-$destination = __DIR__ . '/../dist-vendor'; // target folder.
+$source      = $plugin_root . '/vendor';        // original vendor folder.
+$destination = $dist_vendor_dir;                // target folder.
 
 /**
  * Recursively copy a directory while skipping unwanted files/folders.
@@ -56,8 +73,9 @@ $destination = __DIR__ . '/../dist-vendor'; // target folder.
  */
 function copy_vendor_for_production( $src, $dst ) {
 	$skip_dirs     = array( 'tests', 'test', 'docs', 'examples', '.git', '.github', 'scripts', '.vscode' );
-	$include_ext   = array( 'php', 'json' );
-	$include_files = array( 'readme.md', 'license' );
+	$include_ext   = array( 'php', 'json', 'js', 'css', 'png', 'jpg', 'jpeg', 'gif', 'svg' );
+	$include_files = array();
+	$exclude_files = array( 'composer.json', 'composer.lock' );
 
 	if ( ! is_dir( $dst ) ) {
         // phpcs:ignore
@@ -83,8 +101,7 @@ function copy_vendor_for_production( $src, $dst ) {
 			$do_copy = false;
 
 			// Check if wanted file.
-			$lower_item = strtolower( $item );
-			if ( in_array( $lower_item, $include_files, true ) ) {
+			if ( in_array( $item, $include_files, true ) ) {
 				$do_copy = true;
 			}
 
@@ -92,6 +109,11 @@ function copy_vendor_for_production( $src, $dst ) {
 			$ext = pathinfo( $item, PATHINFO_EXTENSION );
 			if ( in_array( $ext, $include_ext, true ) ) {
 				$do_copy = true;
+			}
+
+			// Check if exclude file.
+			if ( in_array( $item, $exclude_files, true ) ) {
+				continue;
 			}
 
 			if ( ! $do_copy ) {
@@ -106,4 +128,4 @@ function copy_vendor_for_production( $src, $dst ) {
 // Run the copy.
 copy_vendor_for_production( $source, $destination );
 
-echo "vendor copied to dist-vendor successfully, production-ready.\n";
+echo "Vendor copied to dist-vendor successfully, production-ready.\n";

@@ -1,0 +1,13 @@
+{
+    "name": "wpconstructor/scripts",
+    "description": "WPConstructor Scripts: Composer-driven PHP scripts for building, backing up, and distributing WordPress plugins consistently and safely.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "WPConstructor",
+            "homepage": "https://wpconstructor.com/contact",
+            "role": "Developer"
+        }
+    ]
+}

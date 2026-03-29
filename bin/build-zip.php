@@ -1,14 +1,30 @@
 <?php
 /**
- * Build ZIP package for the plugin
+ * Build ZIP package for a WordPress plugin.
  *
- * @package WPConstructor_Scripts
+ * This script collects only the required plugin files, prepares the
+ * distribution directory, and creates a versioned ZIP archive ready
+ * for release. It is intended to be executed from the command line
+ * and is usually triggered as part of the Composer build process.
+ *
+ * @package    WPConstructor\Scripts
+ * @copyright  2026 by WPConstructor
+ * @author     WPConstructor <https://wpconstructor.com/contact>
+ * @license    MIT (https://opensource.org/licenses/MIT)
+ * @link       https://wpconstructor.com/codes/wpconstructor-scripts
+ * @version    1.0.0 
+ * @since      1.0.0 
  */
 
-if ( php_sapi_name() !== 'cli' ) {
-	header( 'HTTP/1.1 403 Forbidden' );
-	exit( 'This script can only be run from the command line.' );
-}
+/**
+ * Requires the helper.php file.
+ */
+require_once __DIR__ . '/../scripts/helper.php';
+
+check_if_cli();
+
+$plugin_root = get_plugin_root( false );
+$plugin_dir  = dirname( $plugin_root );
 
 /**
  * Extract the plugin version from a plugin main file without WordPress.
@@ -43,27 +59,21 @@ function extract_plugin_version( $file_path ) {
 	return null;
 }
 
-$plugin_slug = basename( dirname( __DIR__ ) );
+$plugin_slug = basename( $plugin_root );
 
-$plugin_version = extract_plugin_version( __DIR__ . '/../' . $plugin_slug . '.php' );
+$plugin_version = extract_plugin_version( $plugin_root . '/' . $plugin_slug . '.php' );
 if ( null === $plugin_version ) {
     // phpcs:ignore
     die( "Could not extract plugin version.\n" );
 }
 
-$root     = realpath( __DIR__ . '/..' ) . '/';
+$root     = $plugin_root . '/';
 $dist_dir = $root . 'dist';
-
-// phpcs:ignore
-if ( ! is_writable( $dist_dir ) ) {
-	die( "Dist directory is not writable!\n" );
-}
 
 $zip_file = $dist_dir . '/' . $plugin_slug . '-' . $plugin_version . '_' . gmdate( 'Y-m-d-H-i-s' ) . '.zip';
 
 // Make it Windows compatible.
 $zip_file = str_replace( '\\', '/', $zip_file );
-
 
 // Ensure dist folder exists.
 if ( ! is_dir( $dist_dir ) ) {
@@ -71,10 +81,9 @@ if ( ! is_dir( $dist_dir ) ) {
 	mkdir( $dist_dir, 0755, true );
 }
 
-// Remove existing ZIP if any.
-if ( file_exists( $zip_file ) ) {
-    // phpcs:ignore
-	unlink( $zip_file );
+// phpcs:ignore
+if ( ! is_writable( $dist_dir ) ) {
+	die( "Dist directory is not writable!\n" );
 }
 
 // Initialize ZIP.
@@ -95,7 +104,15 @@ $exclude = array(
 	'.github',
 	'composer.json',
 	'composer.lock',
+	'package.json',
+	'package-lock.json',
 	'phpunit.xml',
+	'.gitignore',
+	'.gitattributes',
+	'README.md',
+	'LICENSE.md',
+	'phpunit.xml',
+	'phpunit-10.xml',
 );
 
 // Recursive iterator for all files.
@@ -110,6 +127,9 @@ foreach ( $iterator as $file ) {
 
 	// Skip excluded files/directories.
 	foreach ( $exclude as $skip ) {
+		if ( strpos( $relative_path, '/' ) === false ) {
+			$skip = str_replace( '//', '', $skip );
+		}
 		if ( $relative_path === $skip || strpos( $relative_path, $skip . '/' ) === 0 ) {
 			continue 2;
 		}

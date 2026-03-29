@@ -2,20 +2,37 @@
 /**
  * WPConstructor Backups Plugin Script.
  *
- * This script serves to quickly make a backup of the plugin development.
- * Backups to wp-content directory plugin-backups. Ignores .git.
+ * This script serves to quickly make a backup of the current plugin.
+ * Backups to the parent of WP root plugin-backups directory.
  *
- * @package WPConstructor_Error_Manager_Development_Scripts
+ * @package    WPConstructor\Scripts
+ * @copyright  2026 by WPConstructor
+ * @author     WPConstructor <https://wpconstructor.com/contact>
+ * @license    MIT (https://opensource.org/licenses/MIT)
+ * @link       https://wpconstructor.com/codes/wpconstructor-scripts
+ * @version    1.0.0 
+ * @since      1.0.0 
  */
 
-$plugin_slug = basename( dirname( __DIR__ ) );
+/**
+ * Requires the helper.php file.
+ */
+require_once __DIR__ . '/../scripts/helper.php';
+
+check_if_cli();
+
+$plugin_root = get_plugin_root( false );
+$plugin_dir  = dirname( $plugin_root );
+$wp_root_dir = get_wp_root( $plugin_root );
+
+$plugin_slug = basename( $plugin_root );
 $exclude     = array( '.git', 'node_modules' );
 
-$source_dir = __DIR__ . '/../';
+$source_dir = $plugin_root . '/';
 
 // Generate timestamped destination folder.
 $timestamp       = gmdate( 'Y-m-d-H-i-s' ); // YEAR-MONTH-DAY-HOUR-MINUTE-SECOND.
-$destination_dir = __DIR__ . '/../../../plugin-backups/' . $plugin_slug . '-' . $timestamp;
+$destination_dir = $wp_root_dir . '/../plugin-backups/' . $plugin_slug . '-' . $timestamp;
 
 /**
  * Recursively copy a directory to another directory.
