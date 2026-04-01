@@ -1,7 +1,7 @@
 # WPConstructor Scripts
 
 <p align="center">
-  <img src="https://wpconstructor.com/assets/images/wpconstructor-scripts-logo.png" alt="WPConstructor Scripts Logo" width="350">
+  <img src="https://wpconstructor.com/assets/images/wpconstructor-scripts-logo.png?v=2" alt="WPConstructor Scripts Logo" width="350">
 </p>
 
 A collection of **Composer-driven PHP scripts** for building, backing up, and distributing WordPress plugins consistently and safely.  
