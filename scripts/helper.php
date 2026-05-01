@@ -32,11 +32,6 @@ function check_if_cli() {
  */
 function get_plugin_root( $add_slash = true ) {
 	$current_dir = getcwd();
-	$plugin_dir  = dirname( $current_dir );
-
-	if ( 'plugins' !== basename( $plugin_dir ) ) {
-		exit( 'Wrong current dir. Please be sure your current dir is in the plugin root!' . "\n" );
-	}
 	if ( $add_slash ) {
 		$current_dir .= '/';
 	}

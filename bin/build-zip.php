@@ -103,7 +103,7 @@ if ( isset( $manifest['use-build-vendor'] ) && true === $manifest['use-build-ven
 	$change_vendor = false;
 }
 
-$root     = $plugin_root . '/';
+$root      = $plugin_root . '/';
 $build_dir = $root . 'build';
 
 if ( isset( $manifest['zip-file-name'] ) ) {
