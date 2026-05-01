@@ -1,6 +1,6 @@
 <?php
 /**
- * Builds the dist-vendor directory, used for the zip build vendor directory.
+ * Builds the build-vendor directory, used for the zip build vendor directory.
  *
  * @package    WPConstructor\Scripts
  * @copyright  2026 by WPConstructor
@@ -17,8 +17,8 @@
 require_once __DIR__ . '/helper.php';
 
 check_if_cli();
-$plugin_root     = get_plugin_root( false );
-$dist_vendor_dir = $plugin_root . '/dist-vendor';
+$plugin_root      = get_plugin_root( false );
+$build_vendor_dir = $plugin_root . '/build-vendor';
 
 /**
  * Recursively delete a directory
@@ -49,21 +49,21 @@ function delete_dir( $dir ) {
 	rmdir( $dir );
 }
 
-if ( is_dir( $dist_vendor_dir ) ) {
+if ( is_dir( $build_vendor_dir ) ) {
 
 	// Delete the folder.
-	delete_dir( $dist_vendor_dir );
+	delete_dir( $build_vendor_dir );
 
-	echo "dist-vendor folder deleted successfully.\n";
+	echo "build-vendor folder deleted successfully.\n";
 
 }
 
 /**
- * Copy vendor folder to dist-vendor for production, skipping unnecessary files.
+ * Copy vendor folder to build-vendor for production, skipping unnecessary files.
  */
 
 $source      = $plugin_root . '/vendor';        // original vendor folder.
-$destination = $dist_vendor_dir;                // target folder.
+$destination = $build_vendor_dir;                // target folder.
 
 /**
  * Recursively copy a directory while skipping unwanted files/folders.
@@ -128,4 +128,4 @@ function copy_vendor_for_production( $src, $dst ) {
 // Run the copy.
 copy_vendor_for_production( $source, $destination );
 
-echo "Vendor copied to dist-vendor successfully, production-ready.\n";
+echo "Vendor copied to build-vendor successfully, production-ready.\n";

@@ -93,18 +93,18 @@ function copy_files_newer_only( $source, $destination, $extensions = null, $excl
 /**
  * Base paths
  */
-$dist_vendor_base = $plugin_root . '/dist-vendor/' . $vendor_name;
-$assets_base      = $plugin_root . '/assets/' . $vendor_name;
+$build_vendor_base = $plugin_root . '/build-vendor/' . $vendor_name;
+$assets_base       = $plugin_root . '/assets/' . $vendor_name;
 
 // Scan all packages.
-$packages = glob( $dist_vendor_base . '/*', GLOB_ONLYDIR );
+$packages = glob( $build_vendor_base . '/*', GLOB_ONLYDIR );
 
 foreach ( $packages as $package_path ) {
 	$package_name = basename( $package_path );
 
 	$src_path = $package_path . '/dist';
 
-	// Copy js files from dist/.
+	// Copy js files from build/.
 	copy_files_newer_only(
 		$src_path,
 		$assets_base . '/' . $package_name,
@@ -113,7 +113,7 @@ foreach ( $packages as $package_path ) {
 		true
 	);
 
-	// Copy css files from dist/.
+	// Copy css files from build/.
 	copy_files_newer_only(
 		$src_path,
 		$assets_base . '/' . $package_name,
@@ -122,7 +122,7 @@ foreach ( $packages as $package_path ) {
 		true
 	);
 
-	// Copy image files from dist/.
+	// Copy image files from build/.
 	copy_files_newer_only(
 		$src_path,
 		$assets_base . '/' . $package_name,

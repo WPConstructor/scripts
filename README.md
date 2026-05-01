@@ -63,10 +63,10 @@ Automatically adds `index.php` to all asset directories to prevent directory lis
 composer run build
 ```
 Runs the full build process:
-1. Copies vendor files to `dist-vendor`  
+1. Copies vendor files to `build-vendor`  
 2. Removes empty directories  
-3. Adds `index.php` files  
-4. Creates a distributable ZIP in `dist/plugin-name-version-date.zip`  
+3. Adds `index.php` files to `assets`.
+4. Creates a distributable ZIP in `build/plugin-name-version-date.zip` or set in `build-zip.manifest.json`.  
 
 - **Clean Project**
 ```bash

@@ -1,6 +1,6 @@
 <?php
 /**
- * Delets empty dirs in dist-vendor directory.
+ * Delets empty dirs in build-vendor directory.
  *
  * @package    WPConstructor\Scripts
  * @copyright  2026 by WPConstructor
@@ -56,7 +56,7 @@ function delete_empty_dirs( $dir, $counter = 0 ) {
 	return $counter;
 }
 
-$folder = $plugin_root . '/dist-vendor';
+$folder = $plugin_root . '/build-vendor';
 $amount = delete_empty_dirs( $folder );
 // phpcs:ignore
 echo "Deleted $amount empty directories.\n";

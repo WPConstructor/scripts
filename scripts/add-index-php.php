@@ -1,6 +1,6 @@
 <?php
 /**
- * Recursively add index.php files to dist-vendor and assets directories and subdirectories.
+ * Recursively add index.php files to assets directories.
  *
  * This is useful for WordPress plugin/theme directories to prevent directory
  * browsing.
@@ -67,11 +67,6 @@ function add_index_files( string $directory, string $index_content = "<?php\n// 
 
 	return $counter;
 }
-
-$target_directory = $plugin_root . '/dist-vendor';
-$amount           = add_index_files( $target_directory );
-// phpcs:ignore;
-echo "Added $amount index.php files to dist-vendor directory.\n";
 
 $target_directory = $plugin_root . '/assets';
 $amount           = add_index_files( $target_directory );

@@ -65,6 +65,7 @@ $exclude       = array(
 	'node_modules',
 	'scripts',
 	'tests',
+	'build',
 	'dist',
 	'.git',
 	'.github',
@@ -96,17 +97,17 @@ if ( isset( $manifest['include'] ) ) {
 	$include = false;
 }
 
-if ( isset( $manifest['use-dist-vendor'] ) && true === $manifest['use-dist-vendor'] ) {
+if ( isset( $manifest['use-build-vendor'] ) && true === $manifest['use-build-vendor'] ) {
 	$change_vendor = true;
 } else {
 	$change_vendor = false;
 }
 
 $root     = $plugin_root . '/';
-$dist_dir = $root . 'dist';
+$build_dir = $root . 'build';
 
 if ( isset( $manifest['zip-file-name'] ) ) {
-	$zip_file = $dist_dir . '/' . $manifest['zip-file-name'];
+	$zip_file = $build_dir . '/' . $manifest['zip-file-name'];
 } else {
 	$plugin_slug    = basename( $plugin_root );
 	$plugin_version = extract_plugin_version( $plugin_root . '/' . $plugin_slug . '.php' );
@@ -114,7 +115,7 @@ if ( isset( $manifest['zip-file-name'] ) ) {
     	// phpcs:ignore
     	die( "Could not extract plugin version.\n" );
 	}
-	$zip_file = $dist_dir . '/' . $plugin_slug . '-' . $plugin_version . '_' . gmdate( 'Y-m-d-H-i-s' ) . '.zip';
+	$zip_file = $build_dir . '/' . $plugin_slug . '-' . $plugin_version . '_' . gmdate( 'Y-m-d-H-i-s' ) . '.zip';
 }
 
 if ( isset( $manifest['base'] ) ) {
@@ -126,15 +127,15 @@ if ( isset( $manifest['base'] ) ) {
 // Make it Windows compatible.
 $zip_file = str_replace( '\\', '/', $zip_file );
 
-// Ensure dist folder exists.
-if ( ! is_dir( $dist_dir ) ) {
+// Ensure build folder exists.
+if ( ! is_dir( $build_dir ) ) {
     // phpcs:ignore
-	mkdir( $dist_dir, 0755, true );
+	mkdir( $build_dir, 0755, true );
 }
 
 // phpcs:ignore
-if ( ! is_writable( $dist_dir ) ) {
-	die( "Dist directory is not writable!\n" );
+if ( ! is_writable( $build_dir ) ) {
+	die( "Build directory is not writable!\n" );
 }
 
 // Initialize ZIP.

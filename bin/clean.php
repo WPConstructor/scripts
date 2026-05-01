@@ -3,7 +3,7 @@
  * Script to clear specific directories while keeping certain assets intact.
  *
  * This script deletes all subdirectories in the 'assets' folder except for
- * 'assets/wpconstructor/{current-plugin}' and dist-vendor.
+ * 'assets/wpconstructor/{current-plugin}' and build-vendor.
  *
  * @package    WPConstructor\Scripts
  * @copyright  2026 by WPConstructor
@@ -70,11 +70,11 @@ foreach ( $assets as $asset_dir ) {
 }
 
 // Delete everything in dis-vendor.
-$dist_vendor = $plugin_dir . '/dist-vendor';
-if ( is_dir( $dist_vendor ) ) {
-	delete_directory( $dist_vendor );
+$build_vendor = $plugin_dir . '/build-vendor';
+if ( is_dir( $build_vendor ) ) {
+	delete_directory( $build_vendor );
     // phpcs:ignore
-	echo "Deleted dist-vendor directory: $dist_vendor\n";
+	echo "Deleted build-vendor directory: $build_vendor\n";
 }
 
 // phpcs:ignore
