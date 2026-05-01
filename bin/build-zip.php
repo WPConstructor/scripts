@@ -32,7 +32,7 @@ $plugin_dir  = dirname( $plugin_root );
  * @param string $file_path Absolute path to the plugin's main PHP file.
  * @return string|null The version string or null if not found.
  */
-function extract_plugin_version( $file_path ) {
+function extract_plugin_version( string $file_path ): ?string {
 	if ( ! file_exists( $file_path ) ) {
 		return null;
 	}
@@ -59,18 +59,69 @@ function extract_plugin_version( $file_path ) {
 	return null;
 }
 
-$plugin_slug = basename( $plugin_root );
+// Files/directories to exclude.
+$exclude       = array(
+	'vendor',
+	'node_modules',
+	'scripts',
+	'tests',
+	'dist',
+	'.git',
+	'.github',
+	'composer.json',
+	'composer.lock',
+	'package.json',
+	'package-lock.json',
+	'phpunit.xml',
+	'.gitignore',
+	'.gitattributes',
+	'README.md',
+	'LICENSE.md',
+	'phpunit.xml',
+	'phpunit-10.xml',
+);
+$manifest_file = getcwd() . '/build-zip.manifest.json';
+if ( file_exists( $manifest_file ) ) {
+	// phpcs:ignore
+	$manifest = json_decode( file_get_contents( $manifest_file ), true );
+}
+if ( isset( $manifest['exclude'] ) ) {
+	$exclude = $manifest['exclude'];
+} else {
+	$exclude = false;
+}
+if ( isset( $manifest['include'] ) ) {
+	$include = $manifest['include'];
+} else {
+	$include = false;
+}
 
-$plugin_version = extract_plugin_version( $plugin_root . '/' . $plugin_slug . '.php' );
-if ( null === $plugin_version ) {
-    // phpcs:ignore
-    die( "Could not extract plugin version.\n" );
+if ( isset( $manifest['use-dist-vendor'] ) && true === $manifest['use-dist-vendor'] ) {
+	$change_vendor = true;
+} else {
+	$change_vendor = false;
 }
 
 $root     = $plugin_root . '/';
 $dist_dir = $root . 'dist';
 
-$zip_file = $dist_dir . '/' . $plugin_slug . '-' . $plugin_version . '_' . gmdate( 'Y-m-d-H-i-s' ) . '.zip';
+if ( isset( $manifest['zip-file-name'] ) ) {
+	$zip_file = $dist_dir . '/' . $manifest['zip-file-name'];
+} else {
+	$plugin_slug    = basename( $plugin_root );
+	$plugin_version = extract_plugin_version( $plugin_root . '/' . $plugin_slug . '.php' );
+	if ( null === $plugin_version ) {
+    	// phpcs:ignore
+    	die( "Could not extract plugin version.\n" );
+	}
+	$zip_file = $dist_dir . '/' . $plugin_slug . '-' . $plugin_version . '_' . gmdate( 'Y-m-d-H-i-s' ) . '.zip';
+}
+
+if ( isset( $manifest['base'] ) ) {
+	$plugin_slug = $manifest['base'];
+} else {
+	$plugin_slug = basename( $plugin_root );
+}
 
 // Make it Windows compatible.
 $zip_file = str_replace( '\\', '/', $zip_file );
@@ -93,28 +144,6 @@ if ( $zip->open( $zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE ) !== tru
 	die( "Cannot create ZIP file at $zip_file\n" );
 }
 
-// Files/directories to exclude.
-$exclude = array(
-	'vendor',
-	'node_modules',
-	'scripts',
-	'tests',
-	'dist',
-	'.git',
-	'.github',
-	'composer.json',
-	'composer.lock',
-	'package.json',
-	'package-lock.json',
-	'phpunit.xml',
-	'.gitignore',
-	'.gitattributes',
-	'README.md',
-	'LICENSE.md',
-	'phpunit.xml',
-	'phpunit-10.xml',
-);
-
 // Recursive iterator for all files.
 $iterator = new RecursiveIteratorIterator(
 	new RecursiveDirectoryIterator( $root, RecursiveDirectoryIterator::SKIP_DOTS ),
@@ -125,18 +154,39 @@ foreach ( $iterator as $file ) {
 	$file_path     = $file->getPathname();
 	$relative_path = str_replace( str_replace( '\\', '/', $root ), '', str_replace( '\\', '/', $file_path ) );
 
-	// Skip excluded files/directories.
-	foreach ( $exclude as $skip ) {
-		if ( strpos( $relative_path, '/' ) === false ) {
-			$skip = str_replace( '//', '', $skip );
-		}
-		if ( $relative_path === $skip || strpos( $relative_path, $skip . '/' ) === 0 ) {
-			continue 2;
+	if ( false !== $exclude ) {
+		// Skip excluded files/directories.
+		foreach ( $exclude as $skip ) {
+			$check_path = '/' . $relative_path;
+			if ( $check_path === $skip || strpos( $check_path, $skip ) === 0 ) {
+				continue 2;
+			}
 		}
 	}
 
-	if ( strpos( $relative_path, 'dist-vendor' ) === 0 ) {
-		$relative_path = 'vendor' . substr( $relative_path, strlen( 'dist-vendor' ) );
+
+	$do_include = false;
+
+	if ( false !== $include ) {
+		foreach ( $include as $inc ) {
+			$check_path = '/' . $relative_path;
+			if ( $check_path === $inc || strpos( $check_path, $inc ) === 0 ) {
+				$do_include = true;
+				continue;
+			}
+		}
+	} else {
+		$do_include = true;
+	}
+
+	if ( false === $do_include ) {
+		continue;
+	}
+
+	if ( true === $change_vendor ) {
+		if ( strpos( $relative_path, 'dist-vendor' ) === 0 ) {
+			$relative_path = 'vendor' . substr( $relative_path, strlen( 'dist-vendor' ) );
+		}
 	}
 
 	// Add files to ZIP with top-level folder.
@@ -144,6 +194,16 @@ foreach ( $iterator as $file ) {
 		$zip->addEmptyDir( "$plugin_slug/$relative_path" );
 	} else {
 		$zip->addFile( $file_path, "$plugin_slug/$relative_path" );
+	}
+}
+
+// Add all index.php's.
+if ( isset( $manifest['add-index-php'] ) ) {
+	foreach ( $manifest['add-index-php'] as $dir ) {
+		$zip->addFromString(
+			"$plugin_slug" . $dir . 'index.php',
+			"<?php\n// phpcs:ignoreFile\n// Silence is golden.\n"
+		);
 	}
 }
 

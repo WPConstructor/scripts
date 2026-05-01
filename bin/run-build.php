@@ -25,7 +25,7 @@ $scripts = array(
 	'php vendor/wpconstructor/scripts/bin/copy-assets.php',
 	'php vendor/wpconstructor/scripts/scripts/delete-empty-dirs.php',
 	'php vendor/wpconstructor/scripts/scripts/add-index-php.php',
-	'npx wpconstr-minify assets',
+	'npx -y @wpconstructor/minify-assets assets 2>&1',
 	'php vendor/wpconstructor/scripts/bin/build-zip.php',
 );
 

@@ -26,7 +26,7 @@ $plugin_dir  = dirname( $plugin_root );
 $wp_root_dir = get_wp_root( $plugin_root );
 
 $plugin_slug = basename( $plugin_root );
-$exclude     = array( '.git', 'node_modules' );
+$exclude     = array( 'node_modules' );
 
 $source_dir = $plugin_root . '/';
 
