@@ -185,8 +185,8 @@ foreach ( $iterator as $file ) {
 	}
 
 	if ( true === $change_vendor ) {
-		if ( strpos( $relative_path, 'dist-vendor' ) === 0 ) {
-			$relative_path = 'vendor' . substr( $relative_path, strlen( 'dist-vendor' ) );
+		if ( strpos( $relative_path, 'build-vendor' ) === 0 ) {
+			$relative_path = 'vendor' . substr( $relative_path, strlen( 'build-vendor' ) );
 		}
 	}
 
