@@ -99,6 +99,18 @@ Backs up all plugins to `wordpress-root/../all-plugins-backup`.
 
 ---
 
+## Changelog
+
+v0.2.0 (July 4, 2026)
+
+- Added support for build-zip.manifest.json, enabling configurable and structured plugin ZIP builds.
+
+v0.1.0 (April 1, 2026)
+
+- Initial version used for the WPConstructor Dashboard (now removed).
+
+---
+
 ## License
 
 MIT License © 2026 by WPConstructor
