@@ -28,13 +28,34 @@ Then, add the following to your plugin’s `composer.json` under the `"scripts"`
 
 ```json
 "scripts": {
-    "build:update": "php vendor/wpconstructor/scripts/scripts/build-vendor.php && php vendor/wpconstructor/scripts bin/copy-assets.php && php vendor/wpconstructor/scripts/scripts/add-index-php.php && npx @wpconstructor minify-assets assets",
     "build": "php vendor/wpconstructor/scripts/bin/run-build.php",
     "cfp": "php vendor/wpconstructor/scripts/bin/cfp.php",
-    "clean": "php vendor/wpconstructor/scripts/bin/clean.php",
-    "backup:packages": "php vendor/wpconstructor/scripts/bin/backup-packages.php",
     "backup:plugin": "php vendor/wpconstructor/scripts/bin/backup-plugin.php",
-    "backup:all-plugins": "php vendor/wpconstructor/scripts/bin/backup-all-plugins.php"
+    "backup: all-plugins": "php vendor/wpconstructor/scripts/bin/backup-all-plugins.php"
+}
+```
+
+Create a `build-zip.manifest.json` file in the root of your plugin. The `base` value should match your plugin's slug (the root directory inside the ZIP). Use the `include` array to specify which files and directories should be packaged, and `add-index-php` to automatically create `index.php` files in the listed directories for additional directory protection.
+
+Example:
+```json
+{
+    "base" : "wpcn-contact",
+    "zip-file-name" : "wpcn-contact.zip",
+    "include":[
+        "/wpcn-contact.php",
+        "/README.md",
+        "/LICENSE.md",
+        "/src/",
+        "/docs/",
+        "/assets/",
+        "/vendor/wpconstructor/plugin-version/src/includes/plugin-version.php",
+        "/vendor/autoload.php",
+        "/vendor/composer/"
+    ],
+    "add-index-php":[
+        "/"
+    ]
 }
 ```
 
@@ -42,37 +63,13 @@ Then, add the following to your plugin’s `composer.json` under the `"scripts"`
 
 ## Usage Examples
 
-### Asset & Security Helpers
-
-- **Build Update**
-```bash
-composer run build:update
-```
-Updates plugin assets to the correct directories, creating nested folders like:  
-`assets/wpconstructor/dashboard/images`.  
-
-- **Add Index Files (included in build)**  
-Automatically adds `index.php` to all asset directories to prevent directory listing.
-
----
-
 ### Build & Distribution
 
 - **Build Plugin**
 ```bash
 composer run build
 ```
-Runs the full build process:
-1. Copies vendor files to `build-vendor`  
-2. Removes empty directories  
-3. Adds `index.php` files to `assets`.
-4. Creates a distributable ZIP in `build/plugin-name-version-date.zip` or set in `build-zip.manifest.json`.  
-
-- **Clean Project**
-```bash
-composer run clean
-```
-Removes empty directories and cleans build artifacts.
+Creates a distributable ZIP in `build/plugin-slug.zip`, as defined in `build-zip.manifest.json`.
 
 ---
 
@@ -99,32 +96,6 @@ Creates a backup of the current plugin in `wordpress-root/../plugin-backups`.
 composer run backup:all-plugins
 ```
 Backs up all plugins to `wordpress-root/../all-plugins-backup`.  
-
-Optional:
-```bash
-composer run backup:all-plugins -- --only-wpconstr
-```
-
-- **Backup Packages Directory**
-```bash
-composer run backup:packages
-```
-Backs up the entire `packages` directory to `wordpress-root/../packages-backup`.
-
----
-
-## One Workflow, Everywhere
-
-With WPConstructor Scripts, every plugin build looks the same:
-
-1. Assets copied  
-2. Vendors trimmed  
-3. Empty directories removed  
-4. Index files added  
-5. ZIP created  
-6. Backups secured  
-
-No guessing. No half-forgotten steps. No copy-pasting scripts between repos.  
 
 ---
 
